@@ -1,0 +1,28 @@
+﻿@page "/now-showing"
+
+<PageTitle>Now Showing</PageTitle>
+
+<div class="container-xxl py-3">
+    <h1>
+        <i class="bi bi-film text-primary"></i>
+        Now Showing
+    </h1>
+
+    <p class="lead italic">
+        Movies that are now showing in theatres.
+    </p>
+    <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-lg-4">
+        @for (int i = 1; i <= 20; i++)
+        {
+            <div class="col">
+                <MovieCard />
+            </div>
+        }
+   </div>
+
+</div>
+
+
+@code {
+
+}
