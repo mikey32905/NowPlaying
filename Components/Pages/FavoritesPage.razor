@@ -1,4 +1,5 @@
 ﻿@page "/favorites"
+@inject FavoritesService favoritesService
 
 <PageTitle>Favorite Movies</PageTitle>
 
@@ -11,8 +12,55 @@
     <p class="lead italic">
         Movies that you have added to your favorites.
     </p>
+
+    @if (favoriteMovies is null)
+    {
+        <div class="d-flex justify-content-center align-items-center">
+            @if (isLoading)
+            {
+                <h2 class="text-muted">Loading Favorite movies...</h2>
+            }
+            else
+            {
+                <h2 class="text-muted">Failed to load Favorite movies</h2>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-lg-4">
+            @foreach (var movie in favoriteMovies)
+            {
+                <div class="col">
+                    <MovieCard Movie="movie" OnChange="OnParametersSetAsync" />
+                </div>
+            }
+        </div>
+    }
 </div>
 
 @code {
+    List<Movie> favoriteMovies = new List<Movie>();
+    bool isLoading = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // load the favorites from local storage service.
+        try
+        {
+            isLoading = true;
+            favoriteMovies = await favoritesService.GetFavorites();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading favorite movies: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+
+    }
+
 
 }

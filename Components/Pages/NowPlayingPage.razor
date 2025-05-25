@@ -1,5 +1,7 @@
 ﻿@page "/now-showing"
 
+@inject TMDBService tmdbService
+
 <PageTitle>Now Showing</PageTitle>
 
 <div class="container-xxl py-3">
@@ -11,18 +13,56 @@
     <p class="lead italic">
         Movies that are now showing in theatres.
     </p>
-    <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-lg-4">
-        @for (int i = 1; i <= 20; i++)
-        {
-            <div class="col">
-                <MovieCard />
-            </div>
-        }
-   </div>
+    @if (nowPlayingMovies is null)
+    {
+        <div class="d-flex justify-content-center align-items-center">
+            @if (isLoading)
+            {
+                <h2 class="text-muted">Loading Now Showing movies...</h2>
+            }
+            else
+            {
+                <h2 class="text-muted">Failed to load Now Showing movies</h2>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-lg-4">
+            @foreach (var movie in nowPlayingMovies.Results)
+            {
+                <div class="col">
+                    <MovieCard Movie="movie" />
+                </div>
+            }
+        </div>
+    }
 
 </div>
 
 
 @code {
+    private MovieListResponse? nowPlayingMovies;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isLoading = true;
+            nowPlayingMovies = await tmdbService.GetNowPlayingMovies();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading now playing movies: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+
+    }
+
+
 
 }
