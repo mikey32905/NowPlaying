@@ -72,5 +72,71 @@ namespace NowPlaying.Services
 
         }
 
+        /// <summary>
+        /// Search for movies
+        /// </summary>
+        /// <param name="query">User supplied query</param>
+        /// <returns></returns>
+        /// <exception cref="HttpIOException"></exception>
+        public async Task<MovieListResponse> SearchMovies(string query)
+        {
+            string url = $"https://api.themoviedb.org/3/search/movie?query={query}&include_adult=false&language=en-US";
+            string imageBaseUrl = "https://image.tmdb.org/t/p/w500";
+
+            MovieListResponse response = await _http.GetFromJsonAsync<MovieListResponse>(url, _jsonOptions)
+            ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Search results could not be loaded.");
+
+            foreach (var movie in response.Results)
+            {
+                if (string.IsNullOrEmpty(movie.PosterPath))
+                {
+                    movie.PosterPath = "/img/mw1920_poster.png";
+                }
+                else
+                {
+                    movie.PosterPath = $"{imageBaseUrl}{movie.PosterPath}";
+                }
+            }
+
+            return response;
+
+        }
+
+        /// <summary>
+        /// Get movie details by ID
+        /// </summary>
+        /// <param name="movieId">id of movie</param>
+        /// <returns></returns>
+        /// <exception cref="HttpIOException"></exception>
+        public async Task<MovieDetails> GetMovieById(int movieId)
+        {
+            string url = $"https://api.themoviedb.org/3/movie/{movieId}";
+            string imageBaseUrl = "https://image.tmdb.org/t/p/w500";
+
+            MovieDetails? response = await _http.GetFromJsonAsync<MovieDetails>(url, _jsonOptions)
+                ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Could not retrieve movie details!");
+
+            if (string.IsNullOrEmpty(response.PosterPath))
+            {
+                response.PosterPath = "/img/mw1920_poster.png";
+            }
+            else
+            {
+                response.PosterPath = $"{imageBaseUrl}{response.PosterPath}";
+            }
+
+            if (string.IsNullOrEmpty(response.BackdropPath))
+            {
+                response.BackdropPath = "/img/mw1920_backdrop.png";
+            }
+            else
+            {
+                response.BackdropPath = $"{imageBaseUrl}{response.BackdropPath}";
+            }
+
+            return response;
+        }
+
+
     }
 }
