@@ -137,6 +137,23 @@ namespace NowPlaying.Services
             return response;
         }
 
+        /// <summary>
+        /// retrieves a movie trailer by movie ID
+        /// </summary>
+        /// <param name="movieId">id of movie</param>
+        /// <returns></returns>
+        public async Task<Video?> GetMovieTrailer(int movieId)
+        {
+            string url = $"https://api.themoviedb.org/3/movie/{movieId}/videos?language=en-US";
+
+            var videos = await _http.GetFromJsonAsync<MovieVideosResponse>(url, _jsonOptions)
+                ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Could not retrieve movie trailer!");
+
+            return videos.Results.FirstOrDefault(v => v.Site!.Contains("YouTube", StringComparison.OrdinalIgnoreCase)
+                                                   && v.Type!.Equals("Trailer", StringComparison.OrdinalIgnoreCase));
+
+            //return movieTrailer;
+        }
 
     }
 }
