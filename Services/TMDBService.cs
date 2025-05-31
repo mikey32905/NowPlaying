@@ -151,7 +151,7 @@ namespace NowPlaying.Services
         /// <returns></returns>
         public async Task<Video?> GetMovieTrailer(int movieId)
         {
-            string url = $"https://api.themoviedb.org/3/movie/{movieId}/videos?language=en-US";
+            string url = $"movie/{movieId}/videos?language=en-US";
 
             var videos = await _http.GetFromJsonAsync<MovieVideosResponse>(url, _jsonOptions)
                 ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Could not retrieve movie trailer!");
