@@ -155,5 +155,47 @@ namespace NowPlaying.Services
             //return movieTrailer;
         }
 
+        /// <summary>
+        /// Get movie credits by movie ID
+        /// </summary>
+        /// <param name="movieId">id of selected movie</param>
+        /// <returns></returns>
+        /// <exception cref="HttpIOException"></exception>
+        public async Task<CreditsResponse?> GetMovieCredits(int movieId)
+        {
+            string url = $"https://api.themoviedb.org/3/movie/{movieId}/credits?language=en-US";
+            string imageBaseUrl = "https://image.tmdb.org/t/p/w500";
+
+            CreditsResponse? credits = await _http.GetFromJsonAsync<CreditsResponse>(url, _jsonOptions)
+                ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Could not retrieve movie credits!");
+
+            foreach (var cast in credits.Cast)
+            {
+
+                if (string.IsNullOrEmpty(cast.ProfilePath))
+                {
+                    cast.ProfilePath = "/img/mw1920_profile.jpg";
+                }
+                else
+                {
+                    cast.ProfilePath = $"{imageBaseUrl}{cast.ProfilePath}";
+                }
+            }
+
+            foreach (var crew in credits.Crew)
+            {
+
+                if (string.IsNullOrEmpty(crew.ProfilePath))
+                {
+                    crew.ProfilePath = "/img/mw1920_profile.jpg";
+                }
+                else
+                {
+                    crew.ProfilePath = $"{imageBaseUrl}{crew.ProfilePath}";
+                }
+            }
+
+            return credits;
+        }
     }
 }
