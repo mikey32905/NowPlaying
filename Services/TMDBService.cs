@@ -21,13 +21,20 @@ namespace NowPlaying.Services
 
             if (!string.IsNullOrWhiteSpace(tmdbKey))
             {
+                _http.BaseAddress = new Uri("https://api.themoviedb.org/3/");
                 _http.DefaultRequestHeaders.Authorization = new("Bearer", tmdbKey);
+            }
+            else
+            {
+                //deployed to netlify.
+                _http.BaseAddress = new Uri(_http.BaseAddress + "tmdb/");
+
             }
         }
 
         public async Task<MovieListResponse> GetNowPlayingMovies()
         {
-            string url = "https://api.themoviedb.org/3/movie/now_playing?region=US&language=en-US";
+            string url = "movie/now_playing?region=US&language=en-US";
             string imageBaseUrl = "https://image.tmdb.org/t/p/w500";
 
             MovieListResponse response = await _http.GetFromJsonAsync<MovieListResponse>(url, _jsonOptions)
@@ -50,7 +57,7 @@ namespace NowPlaying.Services
 
         public async Task<MovieListResponse> GetPopularMovies()
         {
-            string url = "https://api.themoviedb.org/3/movie/popular?region=US&language=en-US";
+            string url = "movie/popular?region=US&language=en-US";
             string imageBaseUrl = "https://image.tmdb.org/t/p/w500";
 
             MovieListResponse response = await _http.GetFromJsonAsync<MovieListResponse>(url, _jsonOptions)
@@ -80,7 +87,7 @@ namespace NowPlaying.Services
         /// <exception cref="HttpIOException"></exception>
         public async Task<MovieListResponse> SearchMovies(string query)
         {
-            string url = $"https://api.themoviedb.org/3/search/movie?query={query}&include_adult=false&language=en-US";
+            string url = $"search/movie?query={query}&include_adult=false&language=en-US";
             string imageBaseUrl = "https://image.tmdb.org/t/p/w500";
 
             MovieListResponse response = await _http.GetFromJsonAsync<MovieListResponse>(url, _jsonOptions)
@@ -110,7 +117,7 @@ namespace NowPlaying.Services
         /// <exception cref="HttpIOException"></exception>
         public async Task<MovieDetails> GetMovieById(int movieId)
         {
-            string url = $"https://api.themoviedb.org/3/movie/{movieId}";
+            string url = $"movie/{movieId}";
             string imageBaseUrl = "https://image.tmdb.org/t/p/w500";
 
             MovieDetails? response = await _http.GetFromJsonAsync<MovieDetails>(url, _jsonOptions)
@@ -163,7 +170,7 @@ namespace NowPlaying.Services
         /// <exception cref="HttpIOException"></exception>
         public async Task<CreditsResponse?> GetMovieCredits(int movieId)
         {
-            string url = $"https://api.themoviedb.org/3/movie/{movieId}/credits?language=en-US";
+            string url = $"movie/{movieId}/credits?language=en-US";
             string imageBaseUrl = "https://image.tmdb.org/t/p/w500";
 
             CreditsResponse? credits = await _http.GetFromJsonAsync<CreditsResponse>(url, _jsonOptions)

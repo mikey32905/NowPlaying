@@ -1,0 +1,5 @@
+﻿# Route all requests to index.html for Blazor
+/*    /index.html   200
+
+# Edge Function calls
+/tmdb/*  /tmdb  200
